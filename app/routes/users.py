@@ -118,3 +118,4 @@ async def get_user(request: Request, session: sessionDep):
             "phone": user.phone,
         }
     }
+    
