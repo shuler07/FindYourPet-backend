@@ -20,5 +20,6 @@ app.add_middleware(
     allow_headers=["*"],
     allow_methods=["*"],
 )
-
 app.include_router(users.router)
+
+print("Зарегистрированные роуты:", [route.path for route in app.routes])

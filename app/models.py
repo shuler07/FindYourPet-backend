@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import DateTime
 from .database import Base
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 class User(Base):
@@ -13,4 +13,5 @@ class User(Base):
     phone: Mapped[Optional[str]] = mapped_column(nullable=True)
     name: Mapped[Optional[str]] = mapped_column(nullable=True)
     role: Mapped[str] = mapped_column(default="user")
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),default=datetime.utcnow,nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),default=lambda: datetime.now(timezone.utc),nullable=False)
+
