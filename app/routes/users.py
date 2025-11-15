@@ -7,7 +7,7 @@ from ..dependencies import get_current_user
 from sqlalchemy.ext.asyncio import AsyncSession
 import random
 from ..models import User
-from ..schemas import UserRegister, UserLogin, UserOut, UpdateEmail, UpdateName
+from ..schemas import UserRegister, UserLogin, UserOut, UpdateEmail, UpdateName, UpdatePhone, UpdatePassword
 from ..database import get_session
 from ..auth import create_token, verify_password, hash_password
 from ..config import ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_DAYS, SECRET_KEY, ALGORITHM
@@ -147,5 +147,28 @@ async def update_email(
         return {"success": False, "message": "Email уже занят"}
 
     current_user.email = data.email
+    await session.commit()
+    return {"success": True}
+
+@router.put("/user/phone")
+async def update_phone(
+    data: UpdatePhone,
+    session: sessionDep,
+    current_user: userDep
+):
+    current_user.phone = data.phone
+    await session.commit()
+    return {"success": True}
+
+@router.put("/user/password")
+async def update_password(
+    data: UpdatePassword,
+    session: sessionDep,
+    current_user: userDep
+):
+    if not verify_password(data.curPassword, current_user.password_hash):
+        return {"success": False, "message": "Неверный текущий пароль"}
+    
+    current_user.password_hash = hash_password(data.newPassword)
     await session.commit()
     return {"success": True}

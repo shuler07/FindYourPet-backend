@@ -5,7 +5,7 @@ from typing import Optional, Literal
 class UserRegister(BaseModel):
     email: EmailStr
     password: str = Field(min_length=8, max_length=72)
-    phone: Optional[str] = Field(None,pattern= r"^\+?[1-9]\d{1,14}$")
+    phone: Optional[str] = Field(None,pattern= r"^\+7\d{10}$")
     name: Optional[str] = None
 
 
@@ -66,3 +66,10 @@ class UpdateName(BaseModel):
 
 class UpdateEmail(BaseModel):
     email: EmailStr
+
+class UpdatePhone(BaseModel):
+    phone: Optional[str] = Field(None, pattern=r"^\+7\d{10}$")
+
+class UpdatePassword(BaseModel):
+    curPassword: str = Field(..., min_length=8)
+    newPassword: str = Field(..., min_length=8, max_length=72)
