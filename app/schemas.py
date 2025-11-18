@@ -62,6 +62,13 @@ class AdOut(BaseModel):
     class Config:
         from_attributes = True
 
+class AdFilters(BaseModel):
+    status: Optional[str] = None
+    type: Optional[str] = None
+    breed: Optional[str] = None
+    size: Optional[str] = None
+    danger: Optional[str] = None
+
 class UpdateName(BaseModel):
     name: str = Field(min_length=1,max_length=50)
 

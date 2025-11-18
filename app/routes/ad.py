@@ -4,10 +4,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional, Annotated
 from datetime import datetime
 
-from dependencies import get_current_user
-from database import get_session
-from models import Ad, User
-from schemas import AdOut, AdCreate
+from ..dependencies import get_current_user
+from ..database import get_session
+from ..models import Ad, User
+from ..schemas import AdOut, AdCreate, AdFilters
 
 router = APIRouter()
 sessionDep = Annotated[AsyncSession, Depends(get_session)]
@@ -45,38 +45,27 @@ async def create_ad(data: AdCreate, session: sessionDep, current_user: userDep):
 
     return {"success": True, "ad_id": ad.id}
 
-@router.post("/ads/get")
-async def get_ads(
-    status: Optional[str] = None,
-    type: Optional[str] = None,
-    breed: Optional[str] = None,
-    size: Optional[str] = None,
-    danger: Optional[str] = None,
-    session: AsyncSession = Depends(get_session)
-):
+@router.get("/ads")
+async def get_ads(session: sessionDep, filters: AdFilters = Depends()):
     try:
         query = select(Ad)
 
-        if status:
-            query = query.where(Ad.status == status)
-        if type:
-            query = query.where(Ad.type == type)
-        if breed:
-            query = query.where(Ad.breed == breed)
-        if size:
-            query = query.where(Ad.size == size)
-        if danger:
-            query = query.where(Ad.danger == danger)
+        if filters.status:
+            query = query.where(Ad.status == filters.status)
+        if filters.type:
+            query = query.where(Ad.type == filters.type)
+        if filters.breed:
+            query = query.where(Ad.breed == filters.breed)
+        if filters.size:
+            query = query.where(Ad.size == filters.size)
+        if filters.danger:
+            query = query.where(Ad.danger == filters.danger)
 
         query = query.order_by(Ad.created_at.desc()).limit(50)
-
         result = await session.scalars(query)
         ads = result.all()
-
         ads_out = [AdOut.model_validate(ad) for ad in ads]
-
         return {"success": True, "ads": ads_out}
-
     except Exception as e:
         print("Ошибка в /ads:", e)
         return {"success": False, "message": "Ошибка на сервере"}
