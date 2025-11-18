@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import DateTime, String, Text, ForeignKey, ARRAY
-from database import Base
+from .database import Base
 from datetime import datetime, timezone
 from typing import Optional
 
