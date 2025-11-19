@@ -3,14 +3,14 @@ from sqlalchemy import select
 from jose import JWTError, jwt
 from datetime import timedelta
 from typing import Annotated
-from ..dependencies import get_current_user
+from dependencies import get_current_user
 from sqlalchemy.ext.asyncio import AsyncSession
 import random
-from ..models import User
-from ..schemas import UserRegister, UserLogin, UserOut, UpdateEmail, UpdateName, UpdatePhone, UpdatePassword
-from ..database import get_session
-from ..auth import create_token, verify_password, hash_password
-from ..config import ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_DAYS, SECRET_KEY, ALGORITHM
+from models import User
+from schemas import UserRegister, UserLogin, UserOut, UpdateEmail, UpdateName, UpdatePhone, UpdatePassword
+from database import get_session
+from auth import create_token, verify_password, hash_password
+from config import ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_DAYS, SECRET_KEY, ALGORITHM
 
 router = APIRouter()
 
