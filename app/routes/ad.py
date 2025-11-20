@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional, Annotated
@@ -74,3 +74,15 @@ async def get_ads(session: sessionDep, filters: AdFilters):
     except Exception as e:
         print("Ошибка в /ads:", e)
         return {"success": False, "message": "Ошибка на сервере"}
+    
+@router.get("/my/ads")
+async def get_my_ads(
+    request: Request,
+    session: sessionDep,
+    current_user: userDep
+):
+    query = select(Ad).where(Ad.user_id == current_user.id).order_by(Ad.created_at.desc())
+    result = await session.scalars(query)
+    ads = result.all()
+    ads_out = [AdOut.model_validate(ad) for ad in ads]
+    return {"success": True, "ads": ads_out}

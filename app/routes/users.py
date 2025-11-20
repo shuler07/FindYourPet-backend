@@ -103,7 +103,7 @@ async def get_me(request: Request):
         return {'success': True}
     except JWTError:
         raise HTTPException(status_code=401, detail='Токен недействителен или истёк')
-
+    
 @router.get("/refresh")
 async def refresh_token(request: Request, response: Response):
     from jose import jwt
@@ -156,6 +156,21 @@ async def get_user(request: Request, session: sessionDep):
             "phone": user.phone,
         }
     }
+
+@router.delete("/user")
+async def delete_user(
+    request: Request,
+    response: Response,
+    session: sessionDep,
+    current_user: Annotated[User, Depends(get_current_user)]
+):
+    await session.delete(current_user)
+    await session.commit()
+
+    response.delete_cookie("access_token")
+    response.delete_cookie("refresh_token")
+
+    return {"success": True, "message": "Аккаунт успешно удален"}
 
 userDep = Annotated[User, Depends(get_current_user)]
 
